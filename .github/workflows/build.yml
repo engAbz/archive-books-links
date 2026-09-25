@@ -1,18 +1,23 @@
 name: build-manifest
 on:
-  schedule: 
-    - cron: "0 3 * * *"   # المنبه: اعمل كل يوم الساعة 3 فجراً
-  workflow_dispatch:      # الزر اليدوي: يسمح لك بتشغيله بضغطة زر متى شئت
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+# هذه هي البطاقة التي تسمح للموظف بالكتابة داخل المستودع
+permissions:
+  contents: write
 
 jobs:
   build:
-    runs-on: ubuntu-latest # الموظف: كمبيوتر افتراضي يعمل بنظام لينكس خارج العراق
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4 # يسحب كود بايثون الخاص بك
-      - uses: actions/setup-python@v5 # يجهز لغة بايثون على الكمبيوتر الافتراضي
-        with: { python-version: "3.12" }
-      - run: pip install requests && python build_manifest.py # يشغل الكود ليصنع الخريطة
-      - run: | # يقوم برفع الخريطة الجديدة إلى مستودعك تلقائياً
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: 
+          python-version: "3.12"
+      - run: pip install requests && python build_manifest.py
+      - run: |
           git config user.name bot
           git config user.email bot@users.noreply.github.com
           git add manifest.json
