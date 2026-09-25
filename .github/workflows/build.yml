@@ -4,7 +4,7 @@ on:
     - cron: "0 3 * * *"
   workflow_dispatch:
 
-# هذه هي البطاقة التي تسمح للموظف بالكتابة داخل المستودع
+# إعطاء التصريح الكامل للكتابة
 permissions:
   contents: write
 
@@ -13,13 +13,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      
+      - name: تجهيز بيئة بايثون
+        uses: actions/setup-python@v5
         with: 
           python-version: "3.12"
-      - run: pip install requests && python build_manifest.py
-      - run: |
-          git config user.name bot
-          git config user.email bot@users.noreply.github.com
-          git add manifest.json
-          git commit -m "update manifest" || exit 0
+          
+      - name: تثبيت المكتبات المطلوبة
+        run: pip install requests
+        
+      - name: تشغيل كود استخراج الروابط
+        run: python build_manifest.py
+        
+      - name: رفع الخريطة الجديدة إلى المستودع
+        run: |
+          git config user.name "bot"
+          git config user.email "bot@users.noreply.github.com"
+          git add .
+          git diff-index --quiet HEAD || git commit -m "update manifest"
           git push
